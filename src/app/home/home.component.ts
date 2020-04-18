@@ -19,7 +19,12 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private coursesService: CoursesService) { }
+
   ngOnInit() {
+    this.loadCourses();
+  }
+
+  loadCourses(): void {
     this.allCourses$ = this.coursesService.load();
     this.beginner$ = this.allCourses$.pipe(
       map(courses => courses.filter(course => course.category === 'BEGINNER'))
@@ -28,5 +33,4 @@ export class HomeComponent implements OnInit {
       map(courses => courses.filter(course => course.category === 'ADVANCED'))
     );
   }
-
 }

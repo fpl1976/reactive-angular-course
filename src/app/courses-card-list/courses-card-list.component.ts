@@ -1,6 +1,9 @@
-import { Component, Input } from '@angular/core';
-import { Course } from '../model/course';
+import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
+import { filter, tap, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+
+import { Course } from '../model/course';
 import { CourseDialogComponent } from '../course-dialog/course-dialog.component';
 
 @Component({
@@ -8,9 +11,12 @@ import { CourseDialogComponent } from '../course-dialog/course-dialog.component'
   templateUrl: './courses-card-list.component.html',
   styleUrls: ['./courses-card-list.component.css']
 })
-export class CoursesCardListComponent {
+export class CoursesCardListComponent implements OnDestroy {
 
   @Input() courses: Course[];
+  @Output() updated: EventEmitter<any> = new EventEmitter();
+
+  destroy$ = new Subject();
 
   constructor(
     private dialog: MatDialog) { }
@@ -25,6 +31,16 @@ export class CoursesCardListComponent {
     dialogConfig.data = course;
 
     const dialogRef = this.dialog.open(CourseDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      takeUntil(this.destroy$)
+    ).subscribe(_ => this.updated.emit());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 
