@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Course, sortCoursesBySeqNo } from '../model/course';
-import { interval, noop, Observable, of, throwError, timer } from 'rxjs';
-import { catchError, delay, delayWhen, filter, finalize, map, retryWhen, shareReplay, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+
+import { interval, noop, Observable, of, throwError, timer } from 'rxjs';
+import { catchError, delay, delayWhen, filter, finalize, map, retryWhen, shareReplay, tap } from 'rxjs/operators';
+
 import { CourseDialogComponent } from '../course-dialog/course-dialog.component';
+import { Course, sortCoursesBySeqNo } from '../model/course';
 
 @Component({
   selector: 'home',
