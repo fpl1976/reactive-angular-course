@@ -18,15 +18,29 @@ export class CourseStore {
     private coursesService: CoursesService,
     private loading: LoadingService,
     private messages: MessagesService) {
-      this.loadCourses();
-     }
+    this.loadCourses();
+  }
 
-  filterByCategory(category: string): Observable<Course[]> {
+  filter(category: string): Observable<Course[]> {
     return this.courses$.pipe(
       map(courses => courses
         .filter(c => c.category === category)
         .sort(sortCoursesBySeqNo)
       )
+    );
+  }
+
+  save(id: string, changes: Partial<Course>): Observable<any> {
+    const previous = this.subject.getValue();
+    this.optimisticUpdate(id, changes);
+    return this.coursesService.save(id, changes).pipe(
+      catchError(err => {
+        const message = 'Could not update course';
+        console.error(message, err);
+        this.messages.showErrors(message);
+        this.subject.next(previous);
+        return throwError(err);
+      })
     );
   }
 
@@ -42,6 +56,24 @@ export class CourseStore {
     );
 
     await this.loading.showLoaderUntilCompleted(load$).pipe(take(1)).toPromise();
+  }
+
+  private optimisticUpdate(id: string, changes: Partial<Course>): void {
+    const courses = this.subject.getValue();
+    const position = courses.findIndex(c => c.id === id);
+    const updated: Course = {
+      ...courses[position],
+      ...changes
+    };
+
+    const newCourses: Course[] = courses.slice(0);
+    newCourses[position] = updated;
+
+    this.subject.next(newCourses);
+    this.subject.next([
+      ...this.subject.value,
+
+    ]);
   }
 
 }

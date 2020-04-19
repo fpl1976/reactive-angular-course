@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { filter, tap, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -14,7 +14,6 @@ import { CourseDialogComponent } from '../course-dialog/course-dialog.component'
 export class CoursesCardListComponent implements OnDestroy {
 
   @Input() courses: Course[];
-  @Output() updated: EventEmitter<any> = new EventEmitter();
 
   destroy$ = new Subject();
 
@@ -35,7 +34,7 @@ export class CoursesCardListComponent implements OnDestroy {
     dialogRef.afterClosed().pipe(
       filter(Boolean),
       takeUntil(this.destroy$)
-    ).subscribe(_ => this.updated.emit());
+    ).subscribe();
   }
 
   ngOnDestroy(): void {
