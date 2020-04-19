@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
-import { map, shareReplay, share } from 'rxjs/operators';
+import { map, shareReplay, share, delay } from 'rxjs/operators';
 
 import { Course, sortCoursesBySeqNo } from '../model/course';
 

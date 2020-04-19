@@ -5,6 +5,8 @@ import { catchError, delay, delayWhen, filter, finalize, map, retryWhen, shareRe
 
 import { Course } from '../model/course';
 import { CoursesService } from '../services/courses.service';
+import { LoadingService } from '../loading/loading.service';
+import { MessagesService } from '../messages/messages.service';
 
 @Component({
   selector: 'home',
@@ -18,19 +20,31 @@ export class HomeComponent implements OnInit {
   advanced$: Observable<Course[]>;
 
   constructor(
-    private coursesService: CoursesService) { }
+    private coursesService: CoursesService,
+    private loadingService: LoadingService,
+    private messagesService: MessagesService) { }
 
   ngOnInit() {
     this.loadCourses();
   }
 
   loadCourses(): void {
-    this.allCourses$ = this.coursesService.load();
-    this.beginner$ = this.allCourses$.pipe(
+    this.allCourses$ = this.coursesService.load().pipe(
+      catchError(err => {
+        const message = 'Could not load services';
+        this.messagesService.showErrors(message);
+        console.error(message, err);
+        return throwError(err);
+      })
+    );
+    const loadCourses$ = this.loadingService.showLoaderUntilCompleted(this.allCourses$);
+
+    this.beginner$ = loadCourses$.pipe(
       map(courses => courses.filter(course => course.category === 'BEGINNER'))
     );
-    this.advanced$ = this.allCourses$.pipe(
+    this.advanced$ = loadCourses$.pipe(
       map(courses => courses.filter(course => course.category === 'ADVANCED'))
     );
+
   }
 }
