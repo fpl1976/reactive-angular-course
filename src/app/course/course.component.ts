@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { Observable, combineLatest } from 'rxjs';
 
 import { Course } from '../model/course';
@@ -27,8 +27,8 @@ export class CourseComponent implements OnInit {
 
   ngOnInit() {
     const courseId = +this.route.snapshot.paramMap.get('courseId');
-    const course$ = this.coursesService.getById(courseId);
-    const lessons$ = this.coursesService.getLessonsByCourseId(courseId);
+    const course$ = this.coursesService.getById(courseId).pipe(startWith(null));
+    const lessons$ = this.coursesService.getLessonsByCourseId(courseId).pipe(startWith([]));
 
     this.data$ = combineLatest([
       course$, lessons$
