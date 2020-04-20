@@ -15,6 +15,6 @@ export function getAllCourses(req: Request, res: Response) {
 export function getCourseById(req: Request, res: Response) {
   const courseId = req.params['id'];
   const courses: any = Object.values(COURSES);
-  const course = courses.find(c => c.id === courseId);
+  const course = courses.find(c => c.id === parseInt(courseId, 10));
   res.status(200).json(course);
 }
